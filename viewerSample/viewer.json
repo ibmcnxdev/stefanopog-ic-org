@@ -1,0 +1,21 @@
+{
+    "extensions": [
+      {
+        "path": "viewer",
+        "application": "Test Viewer",
+        "payload": {
+          "include-files": [
+            "viewerSample/viewer.js"
+          ]
+        },
+        "name": "Test Viewer",
+        "type": "com.ibm.customizer.ui"
+      }
+    ],
+    "name": "Test Viewer",
+    "description": "Test Viewer",
+    "services": [
+      "Customizer"
+    ],
+    "title": "Test Viewer"
+  }

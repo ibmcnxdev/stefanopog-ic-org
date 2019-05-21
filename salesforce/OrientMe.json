@@ -1,0 +1,41 @@
+{
+    "name": "com.ibm.orientme.defaults",
+    "title": "Orient Me for Salesforce",
+    "description": "Modifications to Orient Me page for the Salesforce Demo",
+    "services": [
+        "OrientMe"
+    ],
+    "extensions": [
+        {
+            "name": "New IBM tab",
+            "type": "com.ibm.orientme.tab",
+            "payload": {
+                "title": "IBM.com",
+                "url": "https://www.ibm.com/ie-en/"
+            },
+            "path": "new",
+            "application": "com.ibm.orientme.defaults"
+        },
+        {
+            "name": "Twitter tile action",
+            "type": "com.ibm.orientme.tile.action",
+            "payload": {
+                "title": "Post to twitter",
+                "url": "https://twitter.com/intent/tweet?text={content}",
+                "icon": "https://upload.wikimedia.org/wikipedia/en/9/9f/Twitter_bird_logo_2012.svg"
+            },
+            "path": "new",
+            "application": "com.ibm.orientme.defaults"
+        },
+        {
+            "name": "Twitter tile menu",
+            "type": "com.ibm.orientme.tile.action",
+            "payload": {
+                "title": "Post to twitter",
+                "url": "https://twitter.com/intent/tweet?text={content}"
+            },
+            "path": "menu/new",
+            "application": "com.ibm.orientme.defaults"
+        }
+    ]
+}

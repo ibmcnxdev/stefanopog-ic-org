@@ -1,0 +1,23 @@
+{
+    "extensions": [{
+        "path": "profiles",
+        "application": "Test Connelink",
+        "payload": {
+            "match": {
+                "url": "mycontacts/home.html#/invitations/toto"
+            },
+            "include-files": [
+                "GuestModel/CommunityNoExternal.js"
+            ]
+        },
+        "name": "Test Connelink ext",
+        "description": "Menu from anywhere",
+        "type": "com.ibm.customizer.ui"
+    }],
+    "name": "Test Connelink",
+    "description": "Menu from anywhere",
+    "services": [
+        "Customizer"
+    ],
+    "title": "Test Connelink"
+}

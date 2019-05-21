@@ -1,0 +1,21 @@
+{
+    "extensions": [
+      {
+        "path": "global",
+        "application": "Grupo Familia",
+        "payload": {
+          "include-files": [
+            "gfamilia/gfamilia-googleAnalytics.js"
+          ]
+        },
+        "name": "Extension",
+        "type": "com.ibm.customizer.ui"
+      }
+    ],
+    "name": "Grupo Familia",
+    "description": "Grupo Familia",
+    "services": [
+      "Customizer"
+    ],
+    "title": "Grupo Familia"
+  }

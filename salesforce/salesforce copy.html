@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+	<head>
+<!--
+/*
+* © Copyright IBM Corp. 2015
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at:
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+* implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
+-->
+		<meta charset="ISO-8859-1"/>
+		<title>BOX - WATSON - IBM Connections Cloud - Integration from Stefano Pogliani</title>
+		<link rel="stylesheet" type="text/css" href="./style2/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="./style2/as-ticket.css">
+
+        <script language="javascript" type="text/javascript">
+            //
+            // Function to generate a new content node based on the score data
+            //
+            function createScoreContent(title, score, classId, barColor) {
+                var scoreDiv = document.createElement("div");
+                scoreDiv.id = classId;
+
+                var tone_name = title;
+
+                // Insert the title
+                var contentTitle = document.createElement("h3");
+                contentTitle.innerHTML=tone_name + " : " + (score*100).toFixed(2) + "%";
+                contentTitle.style="padding-left: 5%;";
+                scoreDiv.appendChild(contentTitle);
+
+                // Create the container to hold the bars
+                var barContainerDiv = document.createElement("div");
+                barContainerDiv.style="position:relative;margin:0 0 0 0;width:80%;height:15px;left:3%;background-color:#bbbbbb;";
+
+                // Create the score bar that fills only a certain percentage
+                var barScoreDiv = document.createElement("div");
+                barScoreDiv.style="position:relative;margin:0 0 0 0;padding:0 0 0 0;height:15px;top:0px;left:0px;background-color:" + barColor + ";width:" + (score*100) + "%;";
+
+                // Combine the elements
+                barContainerDiv.appendChild(barScoreDiv);
+                scoreDiv.appendChild(barContainerDiv);
+
+                return scoreDiv;
+            }
+
+            //
+            // Function that returns a dictionary object containing the Emotion Analysis.
+            // It parses the JSON object returned from the Watson Tone Analytics API for
+            // the Emotion specific analysis.
+            //
+            function getEmotionAnalysis(jsonObj) {
+              var retVal = { "Anger": 0.00, "Disgust": 0.00, "Fear": 0.00, "Joy": 0.00, "Sadness": 0.00 };
+
+              var numToneCategories = jsonObj["document_tone"]["tone_categories"].length;
+              for (var toneCatIdx = 0 ; toneCatIdx < numToneCategories ; toneCatIdx++) {
+                var toneCategory = jsonObj["document_tone"]["tone_categories"][toneCatIdx];
+                if ( toneCategory["category_id"] == "emotion_tone" ) {
+                  var numTones = toneCategory["tones"].length;
+                  for (var tonesIdx = 0 ; tonesIdx < numTones ; tonesIdx++) {
+                    var tone_name = toneCategory["tones"][tonesIdx]["tone_name"];
+                    var tone_score = toneCategory["tones"][tonesIdx]["score"];
+                    retVal[tone_name] = tone_score;
+                  }
+                }
+              }
+              return retVal;
+            }
+
+            //
+            // Function that returns a dictionary object containing the Language Analysis.
+            // It parses the JSON object returned from the Watson Tone Analytics API for
+            // the Language specific analysis.
+            //
+            function getLanguageAnalysis(jsonObj) {
+              var retVal = { "Analytical": 0.00, "Confident": 0.00, "Tentative": 0.00 };
+
+              var numToneCategories = jsonObj["document_tone"]["tone_categories"].length;
+              for (var toneCatIdx = 0 ; toneCatIdx < numToneCategories ; toneCatIdx++) {
+                var toneCategory = jsonObj["document_tone"]["tone_categories"][toneCatIdx];
+                if ( toneCategory["category_id"] == "language_tone" ) {
+                  var numTones = toneCategory["tones"].length;
+                  for (var tonesIdx = 0 ; tonesIdx < numTones ; tonesIdx++) {
+                    var tone_name = toneCategory["tones"][tonesIdx]["tone_name"];
+                    var tone_score = toneCategory["tones"][tonesIdx]["score"];
+                    retVal[tone_name] = tone_score;
+                  }
+                }
+              }
+              return retVal;
+            }
+
+            //
+            // Function that returns a dictionary object containing the Social Analysis.
+            // It parses the JSON object returned from the Watson Tone Analytics API for
+            // the Social specific analysis.
+            //
+            function getSocialAnalysis(jsonObj) {
+              var retVal = { "Openness": 0.00, "Conscientiousness": 0.00, "Extraversion": 0.00, "Agreeableness": 0.00, "Emotional Range": 0.00 };
+
+              var numToneCategories = jsonObj["document_tone"]["tone_categories"].length;
+              for (var toneCatIdx = 0 ; toneCatIdx < numToneCategories ; toneCatIdx++) {
+                var toneCategory = jsonObj["document_tone"]["tone_categories"][toneCatIdx];
+                if ( toneCategory["category_id"] == "social_tone" ) {
+                  var numTones = toneCategory["tones"].length;
+                  for (var tonesIdx = 0 ; tonesIdx < numTones ; tonesIdx++) {
+                    var tone_name = toneCategory["tones"][tonesIdx]["tone_name"];
+                    var tone_score = toneCategory["tones"][tonesIdx]["score"];
+                    retVal[tone_name] = tone_score;
+                  }
+                }
+              }
+
+              return retVal;
+            }
+
+            //
+            // Display results of Tone Analysis
+            //
+            function showToneAnalysis(analysis) {
+              var bodyJSONObj = analysis;
+
+              // The content for each of the scores
+              var contentEmotionsDiv = document.createElement("div");
+              contentEmotionsDiv.id = "emotionsScores";
+              contentEmotionsDiv.style="left:5%;width:100%; background-color: #eeeeee;";
+              var emotionAnalysis = getEmotionAnalysis(bodyJSONObj);
+              contentEmotionsDiv.appendChild(createScoreContent("Anger", emotionAnalysis["Anger"], "watsonAngerTone", "#ff0000"));
+              contentEmotionsDiv.appendChild(createScoreContent("Disgust", emotionAnalysis["Disgust"], "watsonDisgustTone", "#551a8b"));
+              contentEmotionsDiv.appendChild(createScoreContent("Fear", emotionAnalysis["Fear"], "watsonFearTone", "#00dd00"));
+              //contentEmotionsDiv.appendChild(createScoreContent("Joy", emotionAnalysis["Joy"], "watsonJoyTone", "#ffff00"));
+              contentEmotionsDiv.appendChild(createScoreContent("Sadness", emotionAnalysis["Sadness"], "watsonSadnessTone", "#0000ff"));
+
+              var contentLanguageDiv = document.createElement("div");
+              contentLanguageDiv.id = "languageScores";
+              //contentLanguageDiv.style="position:absolute;left:35%;top:15%;width:100%; height:100%; background-color: #eeeeee; display: none;";
+              contentLanguageDiv.style="left:35%;width:100%; background-color: #eeeeee; display: none;";
+              var languageAnalysis = getLanguageAnalysis(bodyJSONObj);
+              contentLanguageDiv.appendChild(createScoreContent("Analytical", languageAnalysis["Analytical"], "watsonAnalyticalTone", "#00ccbb"));
+              contentLanguageDiv.appendChild(createScoreContent("Confident", languageAnalysis["Confident"], "watsonConfidentTone", "#00ccbb"));
+              contentLanguageDiv.appendChild(createScoreContent("Tentative", languageAnalysis["Tentative"], "watsonTentativeTone", "#00ccbb"));
+
+              var contentSocialDiv = document.createElement("div");
+              contentSocialDiv.id = "socialScores";
+              //contentSocialDiv.style="position:absolute;left:65%;top:15%;width:100%; height:100%; background-color: #eeeeee;display: none;";
+              contentSocialDiv.style="left:65%;width:100%; background-color: #eeeeee;display: none;";
+              var socialAnalysis = getSocialAnalysis(bodyJSONObj);
+              contentSocialDiv.appendChild(createScoreContent("Openness", socialAnalysis["Openness"], "watsonOpennessTone", "#00aacc"));
+              contentSocialDiv.appendChild(createScoreContent("Conscientiousness", socialAnalysis["Conscientiousness"], "watsonConsciousTone", "#00aacc"));
+              contentSocialDiv.appendChild(createScoreContent("Extraversion", socialAnalysis["Extraversion"], "watsonExtraversionTone", "#00aacc"));
+              contentSocialDiv.appendChild(createScoreContent("Agreeableness", socialAnalysis["Agreeableness"], "watsonAgreeableTone", "#00aacc"));
+              contentSocialDiv.appendChild(createScoreContent("Emotional Range", socialAnalysis["Emotional Range"], "watsonEmotionRangeTone", "#00aacc"));
+
+              // Create the contentDiv
+              var contentDiv = document.getElementById("showWatsonToneAnalysis");
+              //contentDiv.style = "background-color:#fefefe;position:relative;top:100px;left:10px;z-index:1200;overflow:auto;margin:auto;border:1px solid #888;width:80%;height:80%;"
+              contentDiv.style = "background-color:#fefefe;z-index:1200;overflow:auto;margin:auto;border:1px solid #888;"
+
+              contentDiv.appendChild(contentEmotionsDiv);
+              contentDiv.appendChild(contentLanguageDiv);
+              contentDiv.appendChild(contentSocialDiv);
+            }
+
+            //
+            // Display results of Tone Analysis
+            //
+            function showSentimentAnalysis(analysis) {
+                var bodyJSONObj = analysis;
+                var contentDiv = document.getElementById("showWatsonDocumentSentiment");
+                contentDiv.style = "background-color:#fefefe;z-index:1200;overflow:auto;margin:auto;border:1px solid #888;"
+                contentDiv.appendChild(createScoreContent("Overall Negativity Index", bodyJSONObj["doc-sentiment"]["score"] * (-1), "watsonSentiment", "#ff0000"))
+
+            }
+
+            function doOK() {	
+                //
+                //	Build the URL
+                //
+                var finalURL = Origin + "?do=OK";
+
+                document.getElementById("umOK").disabled = true;
+                document.getElementById("umKO").disabled = true;
+
+                console.log("========================================");
+                console.log(finalURL);
+                console.log("========================================");
+                //
+                //	Send the request
+                //
+				var xmlHttpReq = false;
+				if (window.XMLHttpRequest) {
+				    // Mozilla/Safari
+					xmlHttpReq = new XMLHttpRequest();
+				} else if (window.ActiveXObject) {
+				    // IE
+					xmlHttpReq = new ActiveXObject("Microsoft.XMLHTTP");
+				}
+				xmlHttpReq.open('POST', finalURL, true);
+				xmlHttpReq.setRequestHeader('Content-Type', 'application/json');
+				xmlHttpReq.onreadystatechange = function() {
+					if (xmlHttpReq.readyState == 4) {
+						if ((xmlHttpReq.status == 200)) {
+							if (xmlHttpReq.responseText.substr(0, 13) == "\n\n<p><b>ERROR") {
+								document.getElementById("umObjErrorCode").innerHTML = "<small>" + xmlHttpReq.responseText + "</small>";
+								document.getElementById("umFailure").style.display = "inline";
+								document.getElementById("umSuccess").style.display = "none";
+							} else {
+								document.getElementById("umSuccess").style.display = "inline";
+								document.getElementById("umFailure").style.display = "none";
+								document.getElementById("umSuccessResult").innerHTML = "<small>Activity SUCCESFULLY created !</small>";
+							}
+						} else {
+							var tmp = "";
+							tmp += "Error Code : " + xmlHttpReq.status + "<br/>";
+							tmp += "Error TEXT : " + xmlHttpReq.statusText + "<br/>";
+							//tmp += "Error List : <br/>";
+							//for (var i = 0; i < obj.errors.length; i++) {
+							//	tmp += "    " + obj.errors[i] + " <br/>";
+							//}
+							document.getElementById("umObjErrorCode").innerHTML = "<small>" + tmp + "</small>";
+							document.getElementById("umFailure").style.display = "inline";
+							document.getElementById("umSuccess").style.display = "none";
+						}
+					}
+				}
+				xmlHttpReq.send();
+            }
+
+            function doKO() {	
+                //
+                //	Build the URL
+                //
+                var finalURL = Origin + "?do=KO";
+                document.getElementById("umOK").disabled = true;
+                document.getElementById("umKO").disabled = true;
+            }
+            
+            function OnChangeRadio(radio) {
+                if (radio.value == "Emotion") {
+                    document.getElementById('emotionsScores').style.display = "block";
+                    document.getElementById('languageScores').style.display = "none";
+                    document.getElementById('socialScores').style.display = "none";
+                } else if (radio.value == "Language") {
+                    document.getElementById('emotionsScores').style.display = "none";
+                    document.getElementById('languageScores').style.display = "block";
+                    document.getElementById('socialScores').style.display = "none";
+                } else {
+                    document.getElementById('emotionsScores').style.display = "none";
+                    document.getElementById('languageScores').style.display = "none";
+                    document.getElementById('socialScores').style.display = "block";
+                }
+            }
+
+			//
+            //  Start the magic of communicating with CxC
+            //
+			function loadMessages() {
+				window.addEventListener("message", receiveMessage, false);
+			}
+			//
+            //
+            //
+			function receiveMessage(event) {
+				console.log("===================================================================================");
+				console.log("==================== FROM receiveMessage in Box-watson-cc.html =======d============");
+				console.log("===================================================================================");
+				console.log("event received: " + event.origin);
+				console.log(location.origin+ " " + window.origin); 
+				if ((event.origin == "https://apps.ce.collabserv.com") || (event.origin == "https://apps.na.collabserv.com")){
+					console.log("Event Data: " + event.data);
+					var jsonObj = JSON.parse(event.data);
+					loadData(jsonObj.source.resourceContext);
+					document.getElementById('context').innerHTML = "Context : " + event.data; //event.data.context;
+					document.getElementById('gen').innerHTML = "Generator : " + jsonObj.source.resourceContext.openSocial.connections.generator.id; 
+				} else {
+					console.log("Event from Unsupported Domain " + event.origin);
+				}
+				console.log("===================================================================================");
+				console.log("==================== END receiveMessage in Box-watson-cc.html =====================");
+				console.log("===================================================================================");
+			}
+            
+            
+            function loadData(context) {
+                //
+                //	import Context variables
+                //
+                BoxFileId = context['BoxFileId'];
+                BoxFileName = context['BoxFileName'];
+                BoxFileLink = context['BoxFileLink'];
+                BoxFileMeta = context['BoxFileMeta'];
+                AlchemyOut = context['AlchemyOut'];
+                ToneOut = context['ToneOut'];
+                Origin = context['origin'];
+
+                document.getElementById("umOriginalDocument").setAttribute('href', BoxFileLink);
+                //document.getElementById("umOriginalDocument").appendChild(document.createTextNode(BoxFileName));
+
+                showToneAnalysis(ToneOut);
+                showSentimentAnalysis(AlchemyOut);
+    /*
+                var xyz = document.getElementById( "umAlchemyOut" );
+                xyz.innerHTML= JSON.stringify(AlchemyOut, null, 2);
+
+                xyz = document.getElementById( "umToneOut" );
+                xyz.innerHTML= JSON.stringify(ToneOut, null, 2);
+
+                xyz = document.getElementById( "umBoxFileName" );
+                xyz.innerHTML= BoxFileName;
+
+                xyz = document.getElementById( "umBoxFileLink" );
+                xyz.innerHTML= BoxFileLink;
+    */
+            }
+            
+            //
+            //	Initialization of the gadget
+            //
+            var BoxFileId = "";
+            var BoxFileName = "";
+            var BoxFileLink = "";
+            var BoxFileMeta = "";
+            var AlchemyOut = "";
+            var ToneOut = "";
+            var Origin = "";
+        </script>
+    </head>
+    
+    <body onLoad="loadMessages()"></body>
+
+        <table border=0>
+            <tr>
+                <td>
+                    <a id="umScreenName" href="http://www.ibm.com"><img id="umUserPhoto" src="./images/IBM-Watson300x300.png" width="60" height="60"></a
+                </td>
+                <td>
+                    <div id="umHeader">The <a href="toto" id="umOriginalDocument" target="_blank">message</a> coming from your customer contains some negative text !
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <hr/> 
+
+        <div id="showWatsonDocumentSentiment"></div>
+        <hr/>
+
+        <label>Tone Index : </label>
+        <label><input type="radio" name="radioScore" value="Emotion"  onclick="OnChangeRadio(this)" checked/>Emotion</label>
+        <label><input type="radio" name="radioScore" value="Language" onclick="OnChangeRadio(this)"/>Language</label>
+        <label><input type="radio" name="radioScore" value="Social" onclick="OnChangeRadio(this)"/>Social</label>
+
+        <div id="showWatsonToneAnalysis"></div>
+
+        <hr/>
+
+        <table border="0">
+            <tr>
+                <td colspan="2">Do you want WATSON to create an Activity to manage this issue ? ?<br/><br/></td>
+            </tr>
+            <tr/>
+            <tr width="100%">
+                <td align="left">
+                    <button type="button" id="umOK" onclick="doOK();" style="background-color:green; color:white; width: 50%;">YES</button>
+                </td>
+                <td align="right">
+                    <button type="button" id="umKO" onclick="doKO();" style="background-color:red; color:white; width: 50%;">NO</button>
+                </td>
+            </tr>
+        </table>
+        <hr/>
+
+        <!-- 
+        <pre id="umAlchemyOut">
+        </pre>
+        <hr/>
+
+        <pre id="umToneOut">
+        </pre>
+        <hr/>
+        -->
+
+
+        <br/>
+        <div id="umSuccess" style="display: none">
+            <img id="umSuccessImg" src="./images/success_icon.png" width="25" height="25">
+            <div id="umSuccessResult">
+            </div>
+        </div>
+        <div id="umFailure" style="display: none">
+            <img id="umFailureImg" src="./images/icon_error.gif" width="25" height="25">
+            <div id="umObjErrorCode">
+            </div>
+        </div>
+    </body>
+</html>

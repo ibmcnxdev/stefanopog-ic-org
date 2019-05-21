@@ -1,0 +1,21 @@
+{
+    "extensions": [
+      {
+        "path": "global",
+        "application": "CHANEL Theme Customization",
+        "payload": {
+          "include-files": [
+            "chanel/chanel-theme.js"
+          ]
+        },
+        "name": "CHANEL Theme Customization Extension",
+        "type": "com.ibm.customizer.ui"
+      }
+    ],
+    "name": "CHANEL Theme Customization",
+    "description": "CHANEL Theme Customization",
+    "services": [
+      "Customizer"
+    ],
+    "title": "CHANEL Theme Customization"
+  }

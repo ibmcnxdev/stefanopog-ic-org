@@ -1,0 +1,48 @@
+@CHARSET "ISO-8859-1";
+
+body,html {
+	background-color: silver;
+	max-width: 1024px;
+	margin: 0 auto;
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light",	"Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+	color: #325C80;
+	padding: 5px;
+}
+
+h1 {
+	padding-bottom: 10px;
+}
+
+h2 {
+	padding-bottom: 10px;
+}
+
+a,
+a:hover,
+a:active,
+a:visited {
+	color: white;
+	text-decoration: underline;
+}
+
+
+
+.bg-1 { 
+    background-color: #325C80; /* Verse Blue */
+    color: #ffffff;
+    padding: 5px;
+    }
+
+.bg-2 { 
+    background-color: #F1F1F1; /*Light Grey */
+    color: #000000;
+    padding-bottom: 20px;
+}
+
+.selection {
+	padding-bottom: 20px;
+}
+
+#helptext.a {
+	color: white;
+}

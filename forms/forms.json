@@ -1,0 +1,22 @@
+{
+    "name": "Forms Sample",
+    "title": "Forms Sample",
+    "description": "Forms Sample",
+    "services": [
+        "Customizer"
+    ],
+    "extensions": [
+        {
+            "name": "Forms Sample",
+            "type": "com.ibm.customizer.ui",
+            "payload": {
+                "include-files": [
+                    "GuestModel/commonTools.js",
+                    "forms/forms.js"
+                ]
+            },
+            "path": "communities",
+            "application": "Forms Sample"
+        }
+    ]
+}

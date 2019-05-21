@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+	<head>
+<!--
+/*
+* © Copyright IBM Corp. 2015
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at:
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+* implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
+-->
+		<meta charset="ISO-8859-1"/>
+		<title>Salesforce Demo - Integration from Stefano Pogliani</title>
+		<link rel="stylesheet" type="text/css" href="/files/customizer/salesforce/svc_styles/bootstrap.min.css">
+
+        <script language="javascript" type="text/javascript">
+
+			//
+            //  Start the magic of communicating with CxC
+            //
+			function loadMessages() {
+				window.addEventListener("message", receiveMessage, false);
+			}
+			//
+            //
+            //
+			function receiveMessage(event) {
+				console.log("===================================================================================");
+				console.log("==================== FROM receiveMessage in saleforce.html ========================");
+				console.log("===================================================================================");
+				console.log("event received: " + event.origin);
+				console.log(location.origin + " " + window.origin); 
+				if ((event.origin == "https://apps.ce.collabserv.com") || (event.origin == "https://apps.na.collabserv.com")){
+                    console.log("Event Data START");
+                    console.log(JSON.stringify(event.data, ' ', 2));
+                    console.log("Event Data END ");
+                    var jsonObj = JSON.parse(event.data);
+                    if (jsonObj.source) {
+                        loadData(jsonObj.source.resourceContext);
+                    } else {
+                        alert('ERRROROROROR');
+                        //loadData(jsonObj);
+                    }
+				} else {
+					console.log("Event from Unsupported Domain " + event.origin);
+				}
+				console.log("===================================================================================");
+				console.log("==================== END receiveMessage in salesforce.html ========================");
+				console.log("===================================================================================");
+			}
+            
+            function _createMyElement(value) {
+                var myDiv = document.createElement('div');
+                myDiv.innerHTML = value;
+                return myDiv;
+            }
+            
+            function loadData(context) {
+                //
+                //	import Context variables
+                //
+                accountId = context['AccountId'];
+                accountName = context['accountName'];
+                opportunityId = context['Id'];
+                opportunityName = context['Name'];
+                opportunityDesc = context['Description'];
+                opportunityExpectedRev = context['ExpectedRevenue'];
+                opportunityAmount = context['Amount'];
+                opportunityProbability = context['Probability'];
+                opportunityStage = context['StageName'];
+                opportunityCloseDate = context['CloseDate'];
+                opportunityCreatedDate = context['CreatedDate'];
+
+                document.getElementById("umOriginalDocument").setAttribute('href', 'https://eu12.salesforce.com/' + opportunityId);
+                document.getElementById("umOriginalDocument").appendChild(document.createTextNode(opportunityName));
+
+                document.getElementById('accountId').appendChild(_createMyElement(accountId));
+                document.getElementById('accountName').appendChild(_createMyElement(accountName));
+                document.getElementById('opportunityId').appendChild(_createMyElement(opportunityId));
+                document.getElementById('opportunityName').appendChild(_createMyElement(opportunityName));
+                document.getElementById('opportunityDesc').appendChild(_createMyElement(opportunityDesc));
+                document.getElementById('opportunityAmount').appendChild(_createMyElement(opportunityAmount));
+                document.getElementById('opportunityExpectedRev').appendChild(_createMyElement(opportunityExpectedRev));
+                document.getElementById('opportunityProbability').appendChild(_createMyElement(opportunityProbability));
+                document.getElementById('opportunityStage').appendChild(_createMyElement(opportunityStage));
+                document.getElementById('opportunityCloseDate').appendChild(_createMyElement(opportunityCloseDate));
+                document.getElementById('opportunityCreatedDate').appendChild(_createMyElement(opportunityCreatedDate));
+            }
+            
+            //
+            //	Initialization of the gadget
+            //
+            var accountId = "";
+            var accountName = "";
+            var opportunityId = "";
+            var opportunityName = "";
+            var opportunityDesc = "";
+            var opportunityExpectedRev = "";
+            var opportunityAmount = "";
+            var opportunityProbability = "";
+            var opportunityStage = "";
+            var opportunityCloseDate = "";
+            var opportunityCreatedDate = "";
+        </script>
+    </head>
+    
+    <body onLoad="loadMessages()">
+        <table border=0>
+            <tr>
+                <td style="width:30%">
+                    <table border=0>
+                        <tr>
+                            <td align=center>
+                                <a id="umScreenName" href="http://www.salesforce.com"><img id="umUserPhoto" src="/files/customizer/salesforce/salesforce_big.png" width="80" height="40"></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div id="umHeader">The summary of the <a href="toto" id="umOriginalDocument" target="_blank"></a> opportunity is shown here below:
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                        <table style="border:1px solid black; border-spacing: 3px; border-collapse: unset">
+                                <tr style="color:white; background-color:black; font-weight:bold">
+                                    <td style="width:35%">Oppy Name</td>
+                                    <td id="opportunityName"></td>
+                                </tr>
+                                <tr style="color:white; background-color:rgb(94, 90, 90); font-weight:bold">
+                                    <td>Account</td>
+                                    <td id="accountName"></td>
+                                </tr>
+                                <tr>
+                                    <td>Dexcription</td>
+                                    <td id="opportunityDesc"></td>
+                                </tr>
+                                <tr>
+                                    <td>Amount</td>
+                                    <td id="opportunityAmount"></td>
+                                </tr>
+                                <tr>
+                                    <td>Probability</td>
+                                    <td id="opportunityProbability"></td>
+                                </tr>
+                                <tr>
+                                    <td>Exp. Rev.</td>
+                                    <td id="opportunityExpectedRev"></td>
+                                </tr>
+                                <tr>
+                                    <td>Stage</td>
+                                    <td id="opportunityStage"></td>
+                                </tr>
+                                <tr>
+                                    <td>Close Date</td>
+                                    <td id="opportunityCloseDate"></td>
+                                </tr>
+                                <tr>
+                                    <td>Create Date</td>
+                                    <td id="opportunityCreatedDate"></td>
+                                </tr>
+                                <tr>
+                                    <td>Oppy Id</td>
+                                    <td id="opportunityId"></td>
+                                </tr>
+                                <tr>
+                                    <td>AccountId</td>
+                                    <td id="accountId"></td>
+                                </tr>
+                            </table>   
+                                    
+                </td>
+            </tr>
+        </table>
+        <hr/> 
+
+        <div id="SalesforceOpportunity"></div>
+        <div class="panel">
+        </div>
+    </body>
+</html>

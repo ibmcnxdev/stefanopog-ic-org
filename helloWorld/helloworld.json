@@ -1,0 +1,22 @@
+{
+  "extensions": [
+    {
+      "payload": {
+        "match": {
+          "user-email": ["spogliani@spogliani.ibmcollab.com"]
+        },
+        "include-files": ["helloWorld/helloWorld.global.js"]
+      },
+      "name": "Hello World Extension",
+      "type": "com.ibm.customizer.ui",
+      "path":"homepage",
+      "application": "Hello World Homepage Customizations"
+    }
+  ],
+  "name": "Hello World Homepage Customizations",
+  "description": "Hello World Homepage Customization",
+  "services": [
+    "Customizer"
+  ],
+  "title": "Hello World Homepage Customization"
+}

@@ -1,0 +1,44 @@
+<html>
+
+<head>
+    <title>Fake Page></title>
+    <script>
+        //
+        //  Calculate the final redirection URL
+        //
+        //  MY CODE GOES HERE
+        //  NOTE that here I am in IBM Connections Cloud and I have the possibility to understand WHO the current user is
+        //      For instance, in order to get the UserID of the current user I can do the following:
+        //          let theCookiesStr = __cBill_getCookie('ids');
+        //          let theCookies = theCookiesStr.split(":");
+        //          let userId = theCookies[0]
+        //
+        //  but I can also call the IBM connections APIs (no need to be authenticated as this page is 
+        //  served from the same IBM Connections Cloud domain)
+        //
+        //  So...
+        //
+        function __getCookie(cname) {
+            var name = cname + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+        let theCookiesStr = __getCookie('ids');
+        let theCookies = theCookiesStr.split(":");
+        let userId = theCookies[0]
+        let finalUrl = 'https://redcollab.mybluemix.net/verse?searchFor=' + userId + '&service=Twitter'; // here you can use the algorithm that you want...
+
+        window.location = finalUrl;
+    </script>
+</head>
+
+</html>
